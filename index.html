@@ -1,92 +1,134 @@
-<!DOCTYPE html><html lang="id"><head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kenzzo Crypto Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            primary: '#000000',
-            secondary: '#f2f2f2',
-            accent: '#00c896',
-          },
-        },
-      },
+import React, { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Eye } from "lucide-react";
+import axios from "axios";
+
+const coins = [
+  { id: "bitcoin", symbol: "BTC", amount: 0.005 },
+  { id: "ethereum", symbol: "ETH", amount: 0.1 },
+  { id: "solana", symbol: "SOL", amount: 2.5 },
+  { id: "arbitrum", symbol: "ARB", amount: 100 },
+  { id: "binancecoin", symbol: "BNB", amount: 1.2 },
+  { id: "chainlink", symbol: "LINK", amount: 20 },
+];
+
+export default function CryptoDashboard() {
+  const [prices, setPrices] = useState({});
+  const [totalValue, setTotalValue] = useState(0);
+  const [previousValue, setPreviousValue] = useState(0);
+
+  useEffect(() => {
+    const fetchPrices = async () => {
+      const symbols = coins.map((c) => c.id).join("%2C");
+      const { data } = await axios.get(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${symbols}&vs_currencies=idr`
+      );
+      setPrices(data);
+      const newTotal = coins.reduce(
+        (acc, coin) => acc + (data[coin.id]?.idr || 0) * coin.amount,
+        0
+      );
+      setPreviousValue(totalValue);
+      setTotalValue(newTotal);
     };
-  </script>
-</head><body class="bg-secondary font-sans text-primary">
-  <div class="min-h-screen p-4">
-    <!-- TOTAL ASET -->
-    <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
-      <h2 class="text-xl font-semibold mb-2">Total Aset Saya</h2>
-      <p class="text-2xl font-bold">Rp 25.000.000</p>
-    </div><!-- KOLEKSI KOIN -->
-<div class="bg-white rounded-2xl p-6 shadow-md">
-  <h2 class="text-xl font-semibold mb-4">Portofolio Crypto</h2>
-  <div class="space-y-4">
-    <div class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-sm">
-      <div class="flex items-center space-x-3">
-        <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=029" class="w-6 h-6" alt="BTC">
-        <span class="font-semibold">Bitcoin (BTC)</span>
-      </div>
-      <span class="font-bold">0.005 BTC</span>
-    </div>
-    <div class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-sm">
-      <div class="flex items-center space-x-3">
-        <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=029" class="w-6 h-6" alt="ETH">
-        <span class="font-semibold">Ethereum (ETH)</span>
-      </div>
-      <span class="font-bold">0.1 ETH</span>
-    </div>
-    <div class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-sm">
-      <div class="flex items-center space-x-3">
-        <img src="https://cryptologos.cc/logos/solana-sol-logo.png?v=029" class="w-6 h-6" alt="SOL">
-        <span class="font-semibold">Solana (SOL)</span>
-      </div>
-      <span class="font-bold">2.5 SOL</span>
-    </div>
-    <div class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-sm">
-      <div class="flex items-center space-x-3">
-        <img src="https://cryptologos.cc/logos/arbitrum-arb-logo.png?v=029" class="w-6 h-6" alt="ARB">
-        <span class="font-semibold">Arbitrum (ARB)</span>
-      </div>
-      <span class="font-bold">100 ARB</span>
-    </div>
-    <div class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-sm">
-      <div class="flex items-center space-x-3">
-        <img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.png?v=029" class="w-6 h-6" alt="BNB">
-        <span class="font-semibold">Binance Coin (BNB)</span>
-      </div>
-      <span class="font-bold">1.2 BNB</span>
-    </div>
-    <div class="flex justify-between items-center bg-gray-50 p-4 rounded-xl shadow-sm">
-      <div class="flex items-center space-x-3">
-        <img src="https://cryptologos.cc/logos/chainlink-link-logo.png?v=029" class="w-6 h-6" alt="LINK">
-        <span class="font-semibold">Chainlink (LINK)</span>
-      </div>
-      <span class="font-bold">20 LINK</span>
-    </div>
-  </div>
-</div>
+    fetchPrices();
+    const interval = setInterval(fetchPrices, 10000);
+    return () => clearInterval(interval);
+  }, [totalValue]);
 
-<!-- KONTAK -->
-<div class="mt-8 text-center space-x-4">
-  <a href="https://wa.me/6283893345811" class="inline-block bg-accent text-white font-semibold py-2 px-4 rounded-full">WhatsApp</a>
-  <a href="https://instagram.com/knzzii" class="inline-block bg-accent text-white font-semibold py-2 px-4 rounded-full">Instagram</a>
-  <a href="mailto:muhammadrafit300@gmail.com" class="inline-block bg-accent text-white font-semibold py-2 px-4 rounded-full">Email</a>
-</div>
+  const getPNL = () => {
+    const pnl = totalValue - previousValue;
+    const percent = ((pnl / (previousValue || 1)) * 100).toFixed(2);
+    return { pnl, percent };
+  };
 
-<!-- FOOTER -->
-<footer class="text-center mt-10 text-gray-500 text-sm">
-  &copy; Kenzzo 2025
-</footer>
+  const { pnl, percent } = getPNL();
+  const pnlColor = pnl > 0 ? "text-sky-400" : pnl < 0 ? "text-red-500" : "text-gray-500";
 
-  </div>
-</body>
-</html>
+  return (
+    <div className="p-4 space-y-4">
+      <Card className="shadow-xl bg-black text-white">
+        <CardContent className="text-left space-y-1">
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-gray-400">Nilai spot (est.)</p>
+            <Eye size={14} className="text-gray-400" />
+          </div>
+          <p className="text-3xl font-bold">
+            {totalValue.toLocaleString("id-ID", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} IDR
+          </p>
+          <p className={`text-sm font-medium ${pnlColor}`}>
+            PnL hari ini {pnl >= 0 ? "+" : ""}{pnl.toLocaleString("id-ID", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} IDR
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-xl">
+        <CardContent>
+          <h2 className="text-lg font-semibold mb-2">Portofolio Crypto</h2>
+          <div className="space-y-2">
+            {coins.map((coin) => (
+              <div
+                key={coin.symbol}
+                className="flex items-center justify-between bg-gray-50 rounded-xl p-2 shadow"
+              >
+                <div className="flex items-center space-x-2">
+                  <img
+                    src={`https://cryptoicon-api.pages.dev/api/icon/${coin.symbol.toLowerCase()}`}
+                    alt={coin.symbol}
+                    className="w-6 h-6"
+                    onError={(e) => (e.target.style.display = "none")}
+                  />
+                  <span className="font-semibold">
+                    {coin.id.replace(/^(.)/, (m) => m.toUpperCase())} ({coin.symbol})
+                  </span>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium">
+                    {coin.amount} {coin.symbol}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Rp {(
+                      prices[coin.id]?.idr * coin.amount || 0
+                    ).toLocaleString("id-ID")}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex flex-wrap justify-center gap-2">
+        <Button
+          className="bg-green-500 hover:bg-green-600"
+          onClick={() => window.open("https://wa.me/6283893345811", "_blank")}
+        >
+          WhatsApp
+        </Button>
+        <Button
+          className="bg-pink-500 hover:bg-pink-600"
+          onClick={() => window.open("https://instagram.com/knzzii", "_blank")}
+        >
+          Instagram
+        </Button>
+        <Button
+          className="bg-blue-500 hover:bg-blue-600"
+          onClick={() => window.open("mailto:muhammadrafit300@gmail.com")}
+        >
+          Email
+        </Button>
+      </div>
+
+      <p className="text-center text-gray-500 text-sm pt-6">
+        © Kenzzo 2025. All rights reserved.
+      </p>
+    </div>
+  );
+}
