@@ -1,134 +1,78 @@
-import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
-import axios from "axios";
+import React, { useEffect, useState } from "react"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button"; import { Eye } from "lucide-react"; import axios from "axios";
 
-const coins = [
-  { id: "bitcoin", symbol: "BTC", amount: 0.005 },
-  { id: "ethereum", symbol: "ETH", amount: 0.1 },
-  { id: "solana", symbol: "SOL", amount: 2.5 },
-  { id: "arbitrum", symbol: "ARB", amount: 100 },
-  { id: "binancecoin", symbol: "BNB", amount: 1.2 },
-  { id: "chainlink", symbol: "LINK", amount: 20 },
-];
+const coins = [ { id: "bitcoin", symbol: "BTC", amount: 0.005 }, { id: "ethereum", symbol: "ETH", amount: 0.1 }, { id: "solana", symbol: "SOL", amount: 2.5 }, { id: "arbitrum", symbol: "ARB", amount: 100 }, { id: "binancecoin", symbol: "BNB", amount: 1.2 }, { id: "chainlink", symbol: "LINK", amount: 20 }, ];
 
-export default function CryptoDashboard() {
-  const [prices, setPrices] = useState({});
-  const [totalValue, setTotalValue] = useState(0);
-  const [previousValue, setPreviousValue] = useState(0);
+export default function CryptoDashboard() { const [prices, setPrices] = useState({}); const [totalValue, setTotalValue] = useState(0); const [previousValue, setPreviousValue] = useState(0);
 
-  useEffect(() => {
-    const fetchPrices = async () => {
-      const symbols = coins.map((c) => c.id).join("%2C");
-      const { data } = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${symbols}&vs_currencies=idr`
-      );
-      setPrices(data);
-      const newTotal = coins.reduce(
-        (acc, coin) => acc + (data[coin.id]?.idr || 0) * coin.amount,
-        0
-      );
-      setPreviousValue(totalValue);
-      setTotalValue(newTotal);
-    };
-    fetchPrices();
-    const interval = setInterval(fetchPrices, 10000);
-    return () => clearInterval(interval);
-  }, [totalValue]);
+useEffect(() => { const fetchPrices = async () => { const symbols = coins.map((c) => c.id).join("%2C"); const { data } = await axios.get( https://api.coingecko.com/api/v3/simple/price?ids=${symbols}&vs_currencies=idr ); setPrices(data); const newTotal = coins.reduce( (acc, coin) => acc + (data[coin.id]?.idr || 0) * coin.amount, 0 ); setPreviousValue(totalValue); setTotalValue(newTotal); }; fetchPrices(); const interval = setInterval(fetchPrices, 10000); return () => clearInterval(interval); }, [totalValue]);
 
-  const getPNL = () => {
-    const pnl = totalValue - previousValue;
-    const percent = ((pnl / (previousValue || 1)) * 100).toFixed(2);
-    return { pnl, percent };
-  };
+const getPNL = () => { const pnl = totalValue - previousValue; const percent = ((pnl / (previousValue || 1)) * 100).toFixed(2); return { pnl, percent }; };
 
-  const { pnl, percent } = getPNL();
-  const pnlColor = pnl > 0 ? "text-sky-400" : pnl < 0 ? "text-red-500" : "text-gray-500";
+const { pnl, percent } = getPNL(); const pnlColor = pnl > 0 ? "text-sky-400" : pnl < 0 ? "text-red-500" : "text-gray-500";
 
-  return (
-    <div className="p-4 space-y-4">
-      <Card className="shadow-xl bg-black text-white">
-        <CardContent className="text-left space-y-1">
-          <div className="flex items-center gap-2">
-            <p className="text-sm text-gray-400">Nilai spot (est.)</p>
-            <Eye size={14} className="text-gray-400" />
+return ( <div className="p-4 space-y-4"> <Card className="shadow-xl bg-black text-white"> <CardContent className="text-left space-y-1"> <div className="flex items-center gap-2"> <p className="text-sm text-gray-400">Nilai spot (est.)</p> <Eye size={14} className="text-gray-400" /> </div> <p className="text-3xl font-bold"> {totalValue.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2, })} IDR </p> <p className={text-sm font-medium ${pnlColor}}> PnL hari ini {pnl >= 0 ? "+" : ""}{pnl.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2, })} IDR </p> </CardContent> </Card>
+
+<Card className="shadow-xl">
+    <CardContent>
+      <h2 className="text-lg font-semibold mb-2">Portofolio Crypto</h2>
+      <div className="space-y-2">
+        {coins.map((coin) => (
+          <div
+            key={coin.symbol}
+            className="flex items-center justify-between bg-gray-50 rounded-xl p-2 shadow"
+          >
+            <div className="flex items-center space-x-2">
+              <img
+                src={`https://cryptoicon-api.pages.dev/api/icon/${coin.symbol.toLowerCase()}`}
+                alt={coin.symbol}
+                className="w-6 h-6"
+                onError={(e) => (e.target.style.display = "none")}
+              />
+              <span className="font-semibold">
+                {coin.id.replace(/^(.)/, (m) => m.toUpperCase())} ({coin.symbol})
+              </span>
+            </div>
+            <div className="text-right">
+              <p className="font-medium">
+                {coin.amount} {coin.symbol}
+              </p>
+              <p className="text-sm text-gray-500">
+                Rp {(
+                  prices[coin.id]?.idr * coin.amount || 0
+                ).toLocaleString("id-ID")}
+              </p>
+            </div>
           </div>
-          <p className="text-3xl font-bold">
-            {totalValue.toLocaleString("id-ID", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })} IDR
-          </p>
-          <p className={`text-sm font-medium ${pnlColor}`}>
-            PnL hari ini {pnl >= 0 ? "+" : ""}{pnl.toLocaleString("id-ID", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })} IDR
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card className="shadow-xl">
-        <CardContent>
-          <h2 className="text-lg font-semibold mb-2">Portofolio Crypto</h2>
-          <div className="space-y-2">
-            {coins.map((coin) => (
-              <div
-                key={coin.symbol}
-                className="flex items-center justify-between bg-gray-50 rounded-xl p-2 shadow"
-              >
-                <div className="flex items-center space-x-2">
-                  <img
-                    src={`https://cryptoicon-api.pages.dev/api/icon/${coin.symbol.toLowerCase()}`}
-                    alt={coin.symbol}
-                    className="w-6 h-6"
-                    onError={(e) => (e.target.style.display = "none")}
-                  />
-                  <span className="font-semibold">
-                    {coin.id.replace(/^(.)/, (m) => m.toUpperCase())} ({coin.symbol})
-                  </span>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium">
-                    {coin.amount} {coin.symbol}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Rp {(
-                      prices[coin.id]?.idr * coin.amount || 0
-                    ).toLocaleString("id-ID")}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="flex flex-wrap justify-center gap-2">
-        <Button
-          className="bg-green-500 hover:bg-green-600"
-          onClick={() => window.open("https://wa.me/6283893345811", "_blank")}
-        >
-          WhatsApp
-        </Button>
-        <Button
-          className="bg-pink-500 hover:bg-pink-600"
-          onClick={() => window.open("https://instagram.com/knzzii", "_blank")}
-        >
-          Instagram
-        </Button>
-        <Button
-          className="bg-blue-500 hover:bg-blue-600"
-          onClick={() => window.open("mailto:muhammadrafit300@gmail.com")}
-        >
-          Email
-        </Button>
+        ))}
       </div>
+    </CardContent>
+  </Card>
 
-      <p className="text-center text-gray-500 text-sm pt-6">
-        © Kenzzo 2025. All rights reserved.
-      </p>
-    </div>
-  );
-}
+  <div className="flex flex-wrap justify-center gap-2">
+    <Button
+      className="bg-green-500 hover:bg-green-600"
+      onClick={() => window.open("https://wa.me/6283893345811", "_blank")}
+    >
+      WhatsApp
+    </Button>
+    <Button
+      className="bg-pink-500 hover:bg-pink-600"
+      onClick={() => window.open("https://instagram.com/knzzii", "_blank")}
+    >
+      Instagram
+    </Button>
+    <Button
+      className="bg-blue-500 hover:bg-blue-600"
+      onClick={() => window.open("mailto:muhammadrafit300@gmail.com")}
+    >
+      Email
+    </Button>
+  </div>
+
+  <p className="text-center text-gray-500 text-sm pt-6">
+    © Kenzzo 2025. All rights reserved.
+  </p>
+</div>
+
+); }
+
