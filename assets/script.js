@@ -1,11 +1,11 @@
 
 const portfolio = {
-  BTC: 0.005,
-  ETH: 0.1,
-  SOL: 2.5,
-  ARB: 100,
-  BNB: 1.2,
-  LINK: 20
+  BTC: 0.00043,
+  ETH: 0.091,
+  SOL: 0.3,
+  ARB: 23,
+  BNB: 0.8,
+  LINK: 1
 };
 
 const coinSymbols = Object.keys(portfolio);
