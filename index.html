@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button"; import { Eye } from "lucide-react"; import axios from "axios";
+import React, { useEffect, useState } from "react"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button"; import axios from "axios";
 
 const coins = [ { id: "bitcoin", symbol: "BTC", amount: 0.005 }, { id: "ethereum", symbol: "ETH", amount: 0.1 }, { id: "solana", symbol: "SOL", amount: 2.5 }, { id: "arbitrum", symbol: "ARB", amount: 100 }, { id: "binancecoin", symbol: "BNB", amount: 1.2 }, { id: "chainlink", symbol: "LINK", amount: 20 }, ];
 
@@ -8,19 +8,16 @@ useEffect(() => { const fetchPrices = async () => { const symbols = coins.map((c
 
 const getPNL = () => { const pnl = totalValue - previousValue; const percent = ((pnl / (previousValue || 1)) * 100).toFixed(2); return { pnl, percent }; };
 
-const { pnl, percent } = getPNL(); const pnlColor = pnl > 0 ? "text-sky-400" : pnl < 0 ? "text-red-500" : "text-gray-500";
+const { pnl, percent } = getPNL(); const pnlColor = pnl > 0 ? "text-green-500" : pnl < 0 ? "text-red-500" : "text-gray-500";
 
-return ( <div className="p-4 space-y-4"> <Card className="shadow-xl bg-black text-white"> <CardContent className="text-left space-y-1"> <div className="flex items-center gap-2"> <p className="text-sm text-gray-400">Nilai spot (est.)</p> <Eye size={14} className="text-gray-400" /> </div> <p className="text-3xl font-bold"> {totalValue.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2, })} IDR </p> <p className={text-sm font-medium ${pnlColor}}> PnL hari ini {pnl >= 0 ? "+" : ""}{pnl.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2, })} IDR </p> </CardContent> </Card>
+return ( <div className="p-4 space-y-4"> <Card className="shadow-xl"> <CardContent className="text-center"> <h2 className="text-lg font-semibold">Total Aset Saya</h2> <p className="text-2xl font-bold">Rp {totalValue.toLocaleString("id-ID")}</p> <p className={text-sm ${pnlColor}}>PNL: {pnl.toLocaleString("id-ID")} IDR ({percent}%)</p> </CardContent> </Card>
 
 <Card className="shadow-xl">
     <CardContent>
       <h2 className="text-lg font-semibold mb-2">Portofolio Crypto</h2>
       <div className="space-y-2">
         {coins.map((coin) => (
-          <div
-            key={coin.symbol}
-            className="flex items-center justify-between bg-gray-50 rounded-xl p-2 shadow"
-          >
+          <div key={coin.symbol} className="flex items-center justify-between bg-gray-50 rounded-xl p-2 shadow">
             <div className="flex items-center space-x-2">
               <img
                 src={`https://cryptoicon-api.pages.dev/api/icon/${coin.symbol.toLowerCase()}`}
@@ -37,9 +34,7 @@ return ( <div className="p-4 space-y-4"> <Card className="shadow-xl bg-black tex
                 {coin.amount} {coin.symbol}
               </p>
               <p className="text-sm text-gray-500">
-                Rp {(
-                  prices[coin.id]?.idr * coin.amount || 0
-                ).toLocaleString("id-ID")}
+                Rp {(prices[coin.id]?.idr * coin.amount || 0).toLocaleString("id-ID")}
               </p>
             </div>
           </div>
@@ -49,29 +44,12 @@ return ( <div className="p-4 space-y-4"> <Card className="shadow-xl bg-black tex
   </Card>
 
   <div className="flex flex-wrap justify-center gap-2">
-    <Button
-      className="bg-green-500 hover:bg-green-600"
-      onClick={() => window.open("https://wa.me/6283893345811", "_blank")}
-    >
-      WhatsApp
-    </Button>
-    <Button
-      className="bg-pink-500 hover:bg-pink-600"
-      onClick={() => window.open("https://instagram.com/knzzii", "_blank")}
-    >
-      Instagram
-    </Button>
-    <Button
-      className="bg-blue-500 hover:bg-blue-600"
-      onClick={() => window.open("mailto:muhammadrafit300@gmail.com")}
-    >
-      Email
-    </Button>
+    <Button className="bg-green-500 hover:bg-green-600" onClick={() => window.open("https://wa.me/6283893345811", "_blank")}>WhatsApp</Button>
+    <Button className="bg-pink-500 hover:bg-pink-600" onClick={() => window.open("https://instagram.com/knzzii", "_blank")}>Instagram</Button>
+    <Button className="bg-blue-500 hover:bg-blue-600" onClick={() => window.open("mailto:muhammadrafit300@gmail.com")}>Email</Button>
   </div>
 
-  <p className="text-center text-gray-500 text-sm pt-6">
-    © Kenzzo 2025. All rights reserved.
-  </p>
+  <p className="text-center text-gray-500 text-sm pt-6">© Kenzzo 2025. All rights reserved.</p>
 </div>
 
 ); }
